@@ -19,48 +19,59 @@ function updateQuality(items) {
     }
 }
 
-function updateItemQuality(item) {
-    if (item.name != 'Aged Brie' && item.name != 'Backstage passes to a TAFKAL80ETC concert') {
-        if (item.quality > 0) {
-            if (item.name != 'Sulfuras, Hand of Ragnaros') {
-                item.quality = item.quality - 1;
-            }
-        }
-    } else {
+var rules = {
+  'Sulfuras, Hand of Ragnaros' : function (item) {
+  },
+  'Aged Brie': function (item) {
+      increaseQualityUnlessMax(item);
+      decrementSellIn(item);
+  },
+  'Backstage passes to a TAFKAL80ETC concert': function(item) {
+    increaseQualityUnlessMax(item);
+    if (item.sell_in < 11) {
         increaseQualityUnlessMax(item);
-        if (item.name == 'Backstage passes to a TAFKAL80ETC concert') {
-            if (item.sell_in < 11) {
-                increaseQualityUnlessMax(item);
-            }
-            if (item.sell_in < 6) {
-                increaseQualityUnlessMax(item);
-            }
-        }
     }
-    if (item.name != 'Sulfuras, Hand of Ragnaros') {
-        item.sell_in = item.sell_in - 1;
+    if (item.sell_in < 6) {
+        increaseQualityUnlessMax(item);
     }
-    if (item.sell_in < 0) {
-        if (item.name != 'Aged Brie') {
-            if (item.name != 'Backstage passes to a TAFKAL80ETC concert') {
-                if (item.quality > 0) {
-                    if (item.name != 'Sulfuras, Hand of Ragnaros') {
-                        item.quality = item.quality - 1
-                    }
-                }
-            } else {
-                item.quality = 0;
-            }
-        } else {
-            increaseQualityUnlessMax(item);
-        }
+    decrementSellIn(item);
+    if (item.sell_in < 0){
+      item.quality = 0;
     }
+  }
+};
+
+function updateItemQuality(item) {
+    var ruleToBeApplyed = rules[item.name];    
+    if(ruleToBeApplyed){
+      ruleToBeApplyed(item);
+      return;
+    }
+
+    decrementQuality(item);
+
+    if (item.sell_in <= 0){
+      decrementQuality(item);
+    }
+
+    decrementSellIn(item);
+    
 }
 
 function increaseQualityUnlessMax(item) {
-    if (item.quality < 50) {
-        item.quality = item.quality + 1
-    }
+  if (item.quality < 50) {
+      item.quality = item.quality + 1
+  }
+}
+
+function decrementSellIn(item) {
+  item.sell_in--;
+}
+
+function decrementQuality(item) {
+  if(item.quality > 0){
+    item.quality--;
+  }
 }
 
 module.exports = {
