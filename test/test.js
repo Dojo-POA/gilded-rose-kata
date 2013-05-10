@@ -4,7 +4,6 @@ var sinon = require("sinon");
 var Item = require('../src/gilded_rose').Item;
 var updateQuality = require('../src/gilded_rose').updateQuality;
 
-
 describe('Sulfuras', function() {
   it('never gets bad', function() {
     var item = new Item('Sulfuras, Hand of Ragnaros', 0, 80);
